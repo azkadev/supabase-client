@@ -1,5 +1,5 @@
 var { createClient } = require("@supabase/supabase-js");
-class Database {
+class Storage {
     
     constructor(id, key) {
         this.client = createClient(`https://${id}.supabase.co`, key);
@@ -55,5 +55,5 @@ class Database {
 }
 
 module.exports = {
-    Database
+    Storage
 };
