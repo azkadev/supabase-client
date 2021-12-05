@@ -20,7 +20,19 @@ class Database {
         }
         return data;
     }
-    
+    async get(from, dataId, searchData, patern = "") {
+        const { data, error } = await this.client.from(from).select();
+        if (error) {
+            throw error;
+        }
+        for (var index = 0; index < data.length; index++) {
+            var loopData = data[index];
+            if (RegExp(searchData, patern??"i").exec(loopData[String(dataId)])){
+                return loopData;
+            }
+        }
+        return null;
+    }
     async getAll(from) {
         const { data, error } = await this.client.from(from).select();
         if (error) {
