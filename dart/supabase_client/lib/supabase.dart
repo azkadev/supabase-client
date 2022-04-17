@@ -8,24 +8,24 @@ class Database {
 
   dynamic add(String from, datas) async {
     var response = await client.from(from).insert(datas).execute();
-    if (getBoolean(response.error)) {
-      throw response.data;
+    if (response.hasError) {
+      throw response.error!.toJson();
     }
     return true;
   }
 
   dynamic delete(String from, datas) async {
     var response = await client.from(from).delete().match(datas).execute();
-    if (getBoolean(response.error)) {
-      throw response.data;
+    if (response.hasError) {
+      throw response.error!.toJson();
     }
     return response.data;
   }
 
   dynamic get(String from, String dataId, searchData) async {
     var response = await client.from(from).select().execute();
-    if (getBoolean(response.error)) {
-      throw response.data;
+    if (response.hasError) {
+      throw response.error!.toJson();
     }
     for (var index = 0; index < response.data.length; index++) {
       var loopData = response.data[index];
@@ -39,16 +39,16 @@ class Database {
 
   dynamic getAll(String from) async {
     var response = await client.from(from).select().execute();
-    if (getBoolean(response.error)) {
-      throw response.data;
+    if (response.hasError) {
+      throw response.error!.toJson();
     }
     return response.data;
   }
 
   dynamic insert(String from, datas) async {
     var response = await client.from(from).insert(datas).execute();
-    if (getBoolean(response.error)) {
-      throw response.data;
+    if (response.hasError) {
+      throw response.error!.toJson();
     }
     return true;
   }
@@ -56,10 +56,25 @@ class Database {
   dynamic update(String from, dataOrigin, dataUpdate) async {
     var response =
         await client.from(from).update(dataUpdate).match(dataOrigin).execute();
-    if (getBoolean(response.error)) {
-      throw response.data;
+    if (response.hasError) {
+      throw response.error!.toJson();
     }
     return response.data;
+  }
+
+  void on(String from, callback) {
+    if (from.isEmpty) {
+      throw {
+        "message": "Tolong isi from ya !"
+      };
+    }
+    client.from(from).on(SupabaseEventTypes.all, (update) {
+      var json_data = {};
+      json_data["type"] = update.eventType.toLowerCase();
+      json_data["new_data"] = update.newRecord;
+      json_data["old_data"] = update.oldRecord;
+      return callback(json_data);
+    }).subscribe();
   }
 }
 

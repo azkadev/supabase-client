@@ -17,5 +17,8 @@ void main(List<String> arguments) async {
   await supabase.getAll("from");
   await supabase.update("from", {"id": 5}, {"id": 10});
   await supabase.delete("from", {"id": 10});
+  supabase.on("sandbox", (update) {
+    print(update);
+  });
 }
 ```
